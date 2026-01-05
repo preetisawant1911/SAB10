@@ -1,5 +1,4 @@
-import { createContext, useContext, ReactNode } from "react";
-import { useLocalStorage } from "../hooks/useLocalStorage";
+import { createContext, useState, useContext, ReactNode } from "react";
 
 type FavoritesContextType = {
   favorites: string[];
@@ -8,39 +7,34 @@ type FavoritesContextType = {
   isFavorite: (id: string) => boolean;
 };
 
-const FavoritesContext = createContext<FavoritesContextType | undefined>(
-  undefined
-);
+const FavoritesContext = createContext<FavoritesContextType | undefined>(undefined);
 
 export const FavoritesProvider = ({ children }: { children: ReactNode }) => {
-  const [favorites, setFavorites] = useLocalStorage<string[]>(
-    "favoriteMeals",
-    []
-  );
+  const [favorites, setFavorites] = useState<string[]>([]);
 
   const addFavorite = (id: string) => {
-    setFavorites((prev) => (prev.includes(id) ? prev : [...prev, id]));
+    if (!favorites.includes(id)) {
+      setFavorites((prev) => [...prev, id]);
+    }
   };
 
   const removeFavorite = (id: string) => {
-    setFavorites((prev) => prev.filter((f) => f !== id));
+    setFavorites((prev) => prev.filter((fav) => fav !== id));
   };
 
   const isFavorite = (id: string) => favorites.includes(id);
 
   return (
-    <FavoritesContext.Provider
-      value={{ favorites, addFavorite, removeFavorite, isFavorite }}
-    >
+    <FavoritesContext.Provider value={{ favorites, addFavorite, removeFavorite, isFavorite }}>
       {children}
     </FavoritesContext.Provider>
   );
 };
 
 export const useFavorites = () => {
-  const ctx = useContext(FavoritesContext);
-  if (!ctx) {
-    throw new Error("useFavorites must be used inside FavoritesProvider");
+  const context = useContext(FavoritesContext);
+  if (!context) {
+    throw new Error("useFavorites must be used within FavoritesProvider");
   }
-  return ctx;
+  return context;
 };

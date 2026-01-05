@@ -1,11 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import App from "./App1"; // Use App1.tsx if App.tsx rename failed
 import { BrowserRouter } from "react-router-dom";
-import App from "./App";
 import { FavoritesProvider } from "./context/FavoritesContext";
-import "./index.css";
 
-ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <BrowserRouter>
       <FavoritesProvider>

@@ -1,70 +1,46 @@
-import { useFavorites } from "../context/FavoritesContext";
+import { useParams } from "react-router-dom";
 import { useFetch } from "../hooks/useFetch";
 import { endpoints } from "../lib/api";
 import Spinner from "../components/Spinner";
 import ErrorMessage from "../components/ErrorMessage";
-import RecipeCard from "../components/RecipeCard";
+import { useFavorites } from "../context/FavoritesContext";
 
-type MealSummary = {
+type MealDetail = {
   idMeal: string;
   strMeal: string;
   strMealThumb: string;
+  strInstructions: string;
+  [key: string]: string | null;
 };
 
 type MealDetailResponse = {
-  meals: MealSummary[] | null;
+  meals: MealDetail[] | null;
 };
 
-const FavoritesPage = () => {
-  const { favorites } = useFavorites();
+const RecipeDetail = () => {
+  const { recipeId } = useParams<{ recipeId: string }>();
+  const { addFavorite, removeFavorite, isFavorite } = useFavorites();
 
-  if (favorites.length === 0) {
-    return (
-      <div>
-        <h1>Favorites</h1>
-        <p>You have no favorite recipes yet. Browse and add some!</p>
-      </div>
-    );
-  }
+  const url = recipeId ? endpoints.lookupById(recipeId) : null;
+  const { data, loading, error } = useFetch<MealDetailResponse>(url);
+
+  if (loading) return <Spinner />;
+  if (error) return <ErrorMessage message="Failed to load recipe." />;
+  if (!data?.meals || data.meals.length === 0) return <p>No recipe found.</p>;
+
+  const recipe = data.meals[0];
+  const favorite = isFavorite(recipe.idMeal);
 
   return (
-    <div>
-      <h1>Favorites</h1>
-
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-          gap: "1rem",
-          marginTop: "1rem",
-        }}
-      >
-        {favorites.map((id) => (
-          <FavoriteItem key={id} id={id} />
-        ))}
-      </div>
+    <div className="recipe-detail">
+      <h2>{recipe.strMeal}</h2>
+      <img src={recipe.strMealThumb} alt={recipe.strMeal} />
+      <button onClick={() => favorite ? removeFavorite(recipe.idMeal) : addFavorite(recipe.idMeal)}>
+        {favorite ? "Remove from Favorites" : "Add to Favorites"}
+      </button>
+      <p>{recipe.strInstructions}</p>
     </div>
   );
 };
 
-const FavoriteItem = ({ id }: { id: string }) => {
-  const { data, loading, error } = useFetch<MealDetailResponse>(
-    endpoints.lookupById(id)
-  );
-
-  if (loading) return <Spinner />;
-  if (error) return <ErrorMessage message={error} />;
-  if (!data?.meals) return null;
-
-  const meal = data.meals[0];
-
-  return (
-    <RecipeCard
-      id={meal.idMeal}
-      title={meal.strMeal}
-      thumbnail={meal.strMealThumb}
-    />
-  );
-};
-
-export default FavoritesPage;
+export default RecipeDetail;

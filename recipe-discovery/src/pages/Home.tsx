@@ -1,60 +1,73 @@
-import { Link } from "react-router-dom";
-import { useFetch } from "../hooks/useFetch";
-import { endpoints } from "../lib/api";
-import Spinner from "../components/Spinner";
-import ErrorMessage from "../components/ErrorMessage";
-
-type Category = {
-  idCategory: string;
-  strCategory: string;
-  strCategoryThumb: string;
-  strCategoryDescription: string;
-};
-
-type CategoriesResponse = {
-  categories: Category[];
-};
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./Home.css"; // Make sure this file exists
 
 const Home = () => {
-  const { data, loading, error } = useFetch<CategoriesResponse>(
-    endpoints.categories
-  );
+  const [categories, setCategories] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const navigate = useNavigate();
 
-  if (loading) return <Spinner />;
-  if (error) return <ErrorMessage message={error} />;
-  if (!data?.categories) return <p>No categories found.</p>;
+  // Fetch meal categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch(
+          "https://www.themealdb.com/api/json/v1/1/list.php?c=list"
+        );
+        const data = await res.json();
+        const categoryNames = data.meals.map((c: any) => c.strCategory);
+        setCategories(categoryNames);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  // Handle search
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (search.trim() !== "") {
+      navigate(`/search?query=${search}`);
+    }
+  };
+
+  if (loading) return <p className="loading">Loading categories...</p>;
 
   return (
-    <div>
-      <h1>Recipe Categories</h1>
+    <div className="home-container">
+      <h1 className="home-title">Discover Delicious Recipes</h1>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-          gap: "1rem",
-          marginTop: "1rem",
-        }}
-      >
-        {data.categories.map((cat) => (
-          <Link
-            key={cat.idCategory}
-            to={`/category/${encodeURIComponent(cat.strCategory)}`}
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: "8px",
-              padding: "0.5rem",
-              textDecoration: "none",
-              color: "inherit",
-            }}
+      {/* Search Bar */}
+      <form onSubmit={handleSearch} className="search-form">
+        <input
+          type="text"
+          placeholder="Search for a recipe..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="search-input"
+        />
+        <button type="submit" className="search-btn">
+          Search
+        </button>
+      </form>
+
+      {/* Category List */}
+      <h2 className="category-title">Meal Categories</h2>
+
+      <div className="category-grid">
+        {categories.map((cat) => (
+          <div
+            key={cat}
+            className="category-card"
+            onClick={() => navigate(`/category/${cat}`)}
           >
-            <img
-              src={cat.strCategoryThumb}
-              alt={cat.strCategory}
-              style={{ width: "100%", borderRadius: "4px" }}
-            />
-            <h3 style={{ marginTop: "0.5rem" }}>{cat.strCategory}</h3>
-          </Link>
+            {cat}
+          </div>
         ))}
       </div>
     </div>
