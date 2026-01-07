@@ -1,9 +1,9 @@
 import { useParams } from "react-router-dom";
-import { useFetch } from "../hooks/useFetch";
-import { endpoints } from "../lib/api";
-import Spinner from "../components/Spinner";
-import ErrorMessage from "../components/ErrorMessage";
-import { useFavorites } from "../context/FavoritesContext";
+import { useFavorites } from "@context/FavoritesContext";
+import { useFetch } from "@hooks/useFetch";
+import { endpoints } from "@lib/api";
+import Spinner from "@components/Spinner";
+import ErrorMessage from "@components/ErrorMessage";
 
 type MealDetail = {
   idMeal: string;
@@ -30,8 +30,12 @@ const RecipeDetail = () => {
     return <p>Recipe not found.</p>;
 
   const meal = data.meals[0];
+  const favorite = isFavorite(meal.idMeal);
 
-  // Extract ingredients + measures
+  const handleToggleFavorite = () => {
+    favorite ? removeFavorite(meal.idMeal) : addFavorite(meal);
+  };
+
   const ingredients: { ingredient: string; measure: string }[] = [];
   for (let i = 1; i <= 20; i++) {
     const ing = meal[`strIngredient${i}`];
@@ -44,48 +48,42 @@ const RecipeDetail = () => {
     }
   }
 
-  const favorite = isFavorite(meal.idMeal);
-
-  const handleToggleFavorite = () => {
-    if (favorite) {
-      removeFavorite(meal.idMeal);
-    } else {
-      addFavorite(meal.idMeal);
-    }
-  };
-
   return (
-    <div>
-      <h1>{meal.strMeal}</h1>
+    <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
+      <h1 style={{ marginBottom: "1rem" }}>{meal.strMeal}</h1>
+
+      <img
+        src={meal.strMealThumb || ""}
+        alt={meal.strMeal}
+        style={{ width: "100%", borderRadius: "8px", marginBottom: "1.5rem" }}
+      />
 
       <button
         onClick={handleToggleFavorite}
         style={{
-          marginBottom: "1rem",
-          padding: "0.5rem 1rem",
+          marginBottom: "1.5rem",
+          padding: "0.6rem 1.2rem",
+          background: favorite ? "#d9534f" : "#0275d8",
+          color: "white",
+          border: "none",
+          borderRadius: "4px",
           cursor: "pointer",
         }}
       >
         {favorite ? "Remove from Favorites" : "Add to Favorites"}
       </button>
 
-      <img
-        src={meal.strMealThumb}
-        alt={meal.strMeal}
-        style={{ width: "100%", maxWidth: "400px", borderRadius: "8px" }}
-      />
-
       <h2>Ingredients</h2>
       <ul>
-        {ingredients.map((item, idx) => (
-          <li key={idx}>
+        {ingredients.map((item, index) => (
+          <li key={index}>
             {item.ingredient} — {item.measure}
           </li>
         ))}
       </ul>
 
-      <h2>Instructions</h2>
-      <p style={{ whiteSpace: "pre-line" }}>{meal.strInstructions}</p>
+      <h2 style={{ marginTop: "2rem" }}>Instructions</h2>
+      <p>{meal.strInstructions}</p>
     </div>
   );
 };

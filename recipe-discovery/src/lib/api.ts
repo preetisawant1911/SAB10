@@ -1,10 +1,9 @@
-const BASE_URL = "https://www.themealdb.com/api/json/v1/1";
-
 export const endpoints = {
-  categories: `${BASE_URL}/categories.php`,
+  categories: "https://www.themealdb.com/api/json/v1/1/categories.php",
   filterByCategory: (category: string) =>
-    `${BASE_URL}/filter.php?c=${encodeURIComponent(category)}`,
-  lookupById: (id: string) => `${BASE_URL}/lookup.php?i=${id}`,
-  searchByName: (query: string) =>
-    `${BASE_URL}/search.php?s=${encodeURIComponent(query)}`,
+    `https://www.themealdb.com/api/json/v1/1/filter.php?c=${category}`,
+  lookupById: (id: string) =>
+    `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`,
+  search: (query: string) =>
+    `https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`,
 };

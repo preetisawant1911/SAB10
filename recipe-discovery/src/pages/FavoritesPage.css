@@ -1,0 +1,28 @@
+.favorites-container {
+  padding: 2rem;
+}
+
+.favorites-title {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+}
+
+.favorites-empty {
+  text-align: center;
+  font-size: 1.1rem;
+  margin-top: 1rem;
+}
+
+.favorites-link {
+  color: #0275d8;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.favorites-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}

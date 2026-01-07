@@ -1,48 +1,38 @@
-🍽️ Recipe Discovery App
-A modern React + TypeScript single-page application (SPA) that allows users to browse recipes, view details, search meals, and save favorites — powered by TheMealDB API.
+# 🍽️ Recipe Discovery App  
+A modern React + TypeScript application to explore recipes, browse categories, search meals, and save favorites — powered by TheMealDB API.
 
-🚀 Features
-✔ Browse Categories
-Fetches and displays all recipe categories from TheMealDB.
+---
 
-✔ View Recipes by Category
-Dynamic route:
-/category/:categoryName
+## 🚀 Features
 
-✔ Recipe Details
-Dynamic route:
-/recipe/:recipeId  
-Shows:
+### 🔍 Search Recipes  
+Search any recipe by name using the search bar in the navbar.
 
-Image
+### 📂 Browse Categories  
+View all recipe categories with images and descriptions.
 
-Ingredients
+### 📘 Recipe Details  
+Each recipe includes:
+- Ingredients list  
+- Measures  
+- Instructions  
+- Image  
+- Add/Remove from Favorites  
 
-Instructions
+### ❤️ Favorites System  
+Save recipes you love using Context API.  
+Favorites persist during the session.
 
-Add/Remove Favorites
+### ⚛️ Built With  
+- React + TypeScript  
+- React Router  
+- Context API  
+- Custom Hooks  
+- TheMealDB API  
+- Vite  
+- CSS Grid + Flexbox  
 
-✔ Favorites System
-Global state using Context API
+---
 
-Persistent using localStorage
+## 📁 Folder Structure
 
-Favorites page: /favorites
-
-✔ Search Recipes
-Search bar in Navbar
-Results page: /search?query=...
-
-✔ Custom Hooks
-useFetch → API fetching
-
-useLocalStorage → persistent favorites
-
-✔ Clean UI Components
-Navbar
-
-RecipeCard
-
-Spinner
-
-ErrorMessage

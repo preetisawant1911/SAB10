@@ -1,39 +1,20 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 
-export function useFetch<T = unknown>(url: string | null) {
+export const useFetch = <T>(url: string | null) => {
   const [data, setData] = useState<T | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!url) return;
 
-    let cancelled = false;
     setLoading(true);
-    setError(null);
-
     fetch(url)
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch");
-        return res.json();
-      })
-      .then((json) => {
-        if (!cancelled) {
-          setData(json);
-          setLoading(false);
-        }
-      })
-      .catch((err) => {
-        if (!cancelled) {
-          setError(err.message);
-          setLoading(false);
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
+      .then((res) => res.json())
+      .then((json) => setData(json))
+      .catch(() => setError("Failed to fetch data"))
+      .finally(() => setLoading(false));
   }, [url]);
 
   return { data, loading, error };
-}
+};
